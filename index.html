@@ -45,9 +45,22 @@
 			uniform sampler2D tDiffuse;
 
 			void main() {
+				gl_FragColor = texture2D(tDiffuse, vUv);
+			}
+		</script>
 
-				gl_FragColor = texture2D( tDiffuse, vUv );
+        <script id="fragment_shader_depth" type="x-shader/x-fragment">
+			varying vec2 vUv;
+			uniform sampler2D tDepth;
+		    float unpackDepth( const in vec4 rgba_depth ) {
+			    const vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );
+			    float depth = dot( rgba_depth, bit_shift );
+			    return depth;
+		    }
 
+			void main() {
+                float depth = unpackDepth(texture2D(tDepth, vUv));
+				gl_FragColor = vec4(depth, depth, depth, 1);
 			}
 
 		</script>

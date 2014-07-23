@@ -3,6 +3,8 @@ var container, stats;
 
 var cameraRTT, camera, sceneRTT, sceneScreen, scene, renderer, zmesh1, zmesh2;
 
+var depthPassPlugin, depthTarget;
+
 var mouseX = 0, mouseY = 0;
 
 var windowHalfX = window.innerWidth / 2;
@@ -22,7 +24,7 @@ function init() {
   "use strict";
   var i, j, n,
     light, plane, geometry, mat1, mat2,
-    mesh, materialScreen, material2;
+    mesh, materialScreen, material2, materialDepth;
   container = document.getElementById( 'container' );
 
   camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 10000 );
@@ -45,7 +47,10 @@ function init() {
   light.position.set( 0, 0, -1 ).normalize();
   sceneRTT.add( light );
 
-  rtTexture = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBFormat } );
+  rtTexture = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight,
+                                          { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBFormat } );
+  depthTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight,
+                                            {minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter} );
 
   material = new THREE.ShaderMaterial( {
     uniforms: {
@@ -65,10 +70,15 @@ function init() {
     depthWrite: false
   } );
 
-  plane = new THREE.PlaneGeometry( window.innerWidth, window.innerHeight );
-  quad = new THREE.Mesh( plane, material );
-  quad.position.z = -100;
-  sceneRTT.add( quad );
+  materialDepth = new THREE.ShaderMaterial( {
+    uniforms: {
+      tDepth: { type: "t", value: depthTarget }
+    },
+    vertexShader: document.getElementById( 'vertexShader' ).textContent,
+    fragmentShader: document.getElementById( 'fragment_shader_depth' ).textContent,
+    depthWrite: false
+  } );
+
 
   geometry = new THREE.TorusGeometry( 100, 25, 15, 30 );
 
@@ -85,27 +95,18 @@ function init() {
   zmesh2.scale.set( 0.75, 0.75, 0.75 );
   sceneRTT.add( zmesh2 );
 
-  quad = new THREE.Mesh( plane, materialScreen );
+  plane = new THREE.PlaneGeometry( window.innerWidth, window.innerHeight );
+  quad = new THREE.Mesh( plane, materialDepth ); // materialScreen
   quad.position.z = -100;
   sceneScreen.add( quad );
-
-  n = 5;
-  geometry = new THREE.SphereGeometry( 10, 64, 32 );
-  material2 = new THREE.MeshBasicMaterial( { color: 0xffffff, map: rtTexture } );
-  for( j = 0; j < n; j += 1 ) {
-    for( i = 0; i < n; i += 1 ) {
-      mesh = new THREE.Mesh( geometry, material2 );
-      mesh.position.x = ( i - ( n - 1 ) / 2 ) * 20;
-      mesh.position.y = ( j - ( n - 1 ) / 2 ) * 20;
-      mesh.position.z = 0;
-      mesh.rotation.y = - Math.PI / 2;
-      scene.add( mesh );
-    }
-  }
 
   renderer = new THREE.WebGLRenderer();
   renderer.setSize( window.innerWidth, window.innerHeight );
   renderer.autoClear = false;
+
+  depthPassPlugin = new THREE.DepthPassPlugin();
+  depthPassPlugin.renderTarget = depthTarget;
+  renderer.addPrePlugin(depthPassPlugin);
 
   container.appendChild( renderer.domElement );
 
@@ -142,7 +143,9 @@ function render() {
   renderer.clear();
 
   // Render first scene into texture
+  depthPassPlugin.enabled = true;
   renderer.render( sceneRTT, cameraRTT, rtTexture, true );
+  depthPassPlugin.enabled = false;
 
   // Render full screen quad with generated texture
   renderer.render( sceneScreen, cameraRTT );
