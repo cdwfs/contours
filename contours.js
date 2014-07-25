@@ -23,14 +23,16 @@ function onDocumentMouseMove( event ) {
 function init() {
   "use strict";
   var i, j, n,
-    light, plane, geometry, mat1, mat2, lineVerts,
+    light, plane, geometry, mat1, mat2, lineVerts, lineStepX, lineStepY,
     mesh, materialScreen, material2, materialDepth, materialLine;
   container = document.getElementById( 'container' );
 
   camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 10000 );
   camera.position.z = 100;
 
-  cameraRTT = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, -10000, 10000 );
+  cameraRTT = new THREE.OrthographicCamera(window.innerWidth  / -2, window.innerWidth  /  2,
+                                           window.innerHeight /  2, window.innerHeight / -2,
+                                           -200, 200 );
   cameraRTT.position.z = 100;
 
   //
@@ -105,14 +107,19 @@ function init() {
   plane = new THREE.PlaneGeometry( window.innerWidth, window.innerHeight );
   quad = new THREE.Mesh( plane, materialDepth ); // materialScreen
   quad.position.z = -100;
-  sceneScreen.add( quad );
+  //sceneScreen.add( quad );
 
-  lineVerts = new THREE.Geometry();
-  for(i=0; i<100; i += 1) {
-    lineVerts.vertices.push( new THREE.Vector3(-window.innerWidth/2 + 5*i, 0, 50) );
+  lineStepX = window.innerWidth / 500;
+  lineStepY = window.innerHeight / 100;
+  for(j=0; j<100+1; j += 1) {
+    lineVerts = new THREE.Geometry();
+    for(i=0; i<500+1; i += 1) {
+      lineVerts.vertices.push(
+        new THREE.Vector3(-window.innerWidth/2 + i*lineStepX, -window.innerHeight/2 + j*lineStepY, 50) );
+    }
+    lines = new THREE.Line(lineVerts, materialLine, THREE.LineStrip);
+    sceneScreen.add(lines)
   }
-  lines = new THREE.Line(lineVerts, materialLine, THREE.LineStrip);
-  sceneScreen.add(lines)
 
   renderer = new THREE.WebGLRenderer();
   renderer.setSize( window.innerWidth, window.innerHeight );

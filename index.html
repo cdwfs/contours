@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgl - render-to-texture</title>
+		<title>Contourtions</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
@@ -32,7 +32,7 @@
 	<body>
 
 		<div id="container"></div>
-		<div id="info"><a href="http://threejs.org" target="_blank">three.js</a> render-to-texture webgl example</div>
+		<div id="info"><a href="http://threejs.org" target="_blank">three.js</a> contours</div>
 
 		<script src="js/three.min.js"></script>
 <!--
@@ -97,7 +97,7 @@
 		    }
 			void main() {
                 vec4 outPos = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-                outPos.y -= 0.1*unpackDepth( texture2D(tDepth, vec2(0.5*outPos.x + 0.5,0.5)) );
+                outPos.y += 0.02*(1.0-unpackDepth( texture2D(tDepth, vec2(0.5*outPos.x + 0.5, 0.5*outPos.y + 0.5)) ));
 				gl_Position = outPos;
 			}
 		</script>
