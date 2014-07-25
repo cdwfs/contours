@@ -173,7 +173,7 @@ function render() {
 
   // Render second scene to screen
   // (using first scene as regular texture)
-  renderer.render( scene, camera );
+  //renderer.render( scene, camera );
 }
 
 function animate() {
