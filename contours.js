@@ -10,7 +10,7 @@ var mouseX = 0, mouseY = 0;
 var windowHalfX = window.innerWidth / 2;
 var windowHalfY = window.innerHeight / 2;
 
-var rtTexture, material, quad;
+var rtTexture, material, quad, lines;
 
 var delta = 0.01;
 
@@ -23,8 +23,8 @@ function onDocumentMouseMove( event ) {
 function init() {
   "use strict";
   var i, j, n,
-    light, plane, geometry, mat1, mat2,
-    mesh, materialScreen, material2, materialDepth;
+    light, plane, geometry, mat1, mat2, lineVerts,
+    mesh, materialScreen, material2, materialDepth, materialLine;
   container = document.getElementById( 'container' );
 
   camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 10000 );
@@ -79,6 +79,13 @@ function init() {
     depthWrite: false
   } );
 
+  materialLine = new THREE.ShaderMaterial( {
+    uniforms: {
+      tDepth: { type: "t", value: depthTarget }
+    },
+    vertexShader: document.getElementById( 'vertexShaderLine' ).textContent,
+    fragmentShader: document.getElementById( 'fragment_shader_line' ).textContent
+  } );
 
   geometry = new THREE.TorusGeometry( 100, 25, 15, 30 );
 
@@ -99,6 +106,13 @@ function init() {
   quad = new THREE.Mesh( plane, materialDepth ); // materialScreen
   quad.position.z = -100;
   sceneScreen.add( quad );
+
+  lineVerts = new THREE.Geometry();
+  for(i=0; i<100; i += 1) {
+    lineVerts.vertices.push( new THREE.Vector3(-window.innerWidth/2 + 5*i, 0, 50) );
+  }
+  lines = new THREE.Line(lineVerts, materialLine, THREE.LineStrip);
+  sceneScreen.add(lines)
 
   renderer = new THREE.WebGLRenderer();
   renderer.setSize( window.innerWidth, window.innerHeight );
