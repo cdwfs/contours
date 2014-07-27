@@ -110,8 +110,8 @@ function init() {
   //sceneScreen.add( quad );
 
   lineStepX = window.innerWidth / 500;
-  lineStepY = window.innerHeight / 100;
-  for(j=0; j<100+1; j += 1) {
+  lineStepY = 10;
+  for(j=0; j<window.innerHeight/lineStepY; j += 1) {
     lineVerts = new THREE.Geometry();
     for(i=0; i<500+1; i += 1) {
       lineVerts.vertices.push(

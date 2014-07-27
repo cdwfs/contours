@@ -97,13 +97,13 @@
 		    }
 			void main() {
                 vec4 outPos = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-                outPos.y += 0.02*(1.0-unpackDepth( texture2D(tDepth, vec2(0.5*outPos.x + 0.5, 0.5*outPos.y + 0.5)) ));
+                outPos.y += 0.005*(1.0-unpackDepth( texture2D(tDepth, vec2(0.5*outPos.x + 0.5, 0.5*outPos.y + 0.5)) ));
 				gl_Position = outPos;
 			}
 		</script>
         <script id="fragment_shader_line" type="x-shader/x-fragment">
             void main() {
-				gl_FragColor = vec4(1,0,0,1);//texture2D(tDiffuse, vUv);
+				gl_FragColor = vec4(0.5,0.5,1.0,1.0);//texture2D(tDiffuse, vUv);
 			}
 		</script>
 
