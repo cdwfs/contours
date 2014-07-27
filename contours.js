@@ -1,3 +1,4 @@
+/*jslint browser: true, white: true, indent: 2 */
 var container, stats;
 
 var cameraRTT, sceneRTT, sceneScreen, renderer, zmesh1, zmesh2;
