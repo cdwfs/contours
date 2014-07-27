@@ -35,48 +35,7 @@
 		<div id="info"><a href="http://threejs.org" target="_blank">three.js</a> contours</div>
 
 		<script src="js/three.min.js"></script>
-<!--
-		<script src="js/Detector.js"></script>
--->
 		<script src="js/stats.min.js"></script>
-
-        <script id="fragment_shader_screen" type="x-shader/x-fragment">
-			varying vec2 vUv;
-			uniform sampler2D tDiffuse;
-
-			void main() {
-				gl_FragColor = texture2D(tDiffuse, vUv);
-			}
-		</script>
-
-        <script id="fragment_shader_depth" type="x-shader/x-fragment">
-			varying vec2 vUv;
-			uniform sampler2D tDepth;
-		    float unpackDepth( const in vec4 rgba_depth ) {
-			    const vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );
-			    float depth = dot( rgba_depth, bit_shift );
-			    return depth;
-		    }
-
-			void main() {
-                float depth = unpackDepth(texture2D(tDepth, vUv));
-				gl_FragColor = vec4(depth, depth, depth, 1);
-			}
-		</script>
-
-		<script id="fragment_shader_pass_1" type="x-shader/x-fragment">
-			varying vec2 vUv;
-			uniform float time;
-
-			void main() {
-				float r = vUv.x;
-				if( vUv.y < 0.5 ) r = 0.0;
-				float g = vUv.y;
-				if( vUv.x < 0.5 ) g = 0.0;
-
-				gl_FragColor = vec4( r, g, time, 1.0 );
-			}
-		</script>
 
 		<script id="vertexShader" type="x-shader/x-vertex">
 			varying vec2 vUv;
